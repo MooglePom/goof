@@ -1,0 +1,80 @@
+name: "git_actions.yml"
+
+#Vulnerable Application Example
+#No Snyk in use
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  Pipeline-Job:
+    # Configure Environment
+    name: 'Install goof'
+    runs-on: variable***-latest
+    env: 
+      SNYK_TOKEN: ${{ secrets.SNYK***_TOKEN }}
+       
+    steps:
+    # Checkout Code
+    - name: Checkout Code
+      uses: actions/checkout@v1
+
+    # Install and Authenticate to Snyk
+    - name: Install Snyk & Authenticate
+      run: |
+         sudo npm install -g snyk
+         snyk auth ${SNYK_TOKEN}
+
+    # Run Snyk Test 
+    - name: Snyk SCM Test
+      run: |
+         snyk test server/
+      continue-on-error: true 
+    
+    # Snyk Monitor
+    - name: Snyk Monitor
+      run: |
+        snyk monitor server/
+
+    # Snyk Code Scan 
+    - name: Snyk Code Test 
+      run: |
+        snyk code test server/
+      continue-on-error: true 
+    
+    # Build Docker Container
+    - name: Build Container
+      run: |
+        docker build . -t mooglepom/mk:v1
+
+    #Run Smoke Test (Optional- Needs Attention)
+    #- name: Test Docker Container
+      #run: |
+        #docker run -d mooglepom/mk:v1 
+        #curl localhost:5555 sleep 1
+
+#plz no breaky
+
+    #Run Container Scan
+    - name: Snyk Container Scan
+      run: |
+        snyk container test --file=Dockerfile mooglepom/mk:v1
+      continue-on-error: true
+
+    #Login to Heroku
+    - name: Login to Heroku
+      uses: heroku***/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }} ***
+        password: ${{ secrets.DOCKER_PASSWORD }} ***
+
+    #Push to Heroku
+    - name: Push to Heroku
+      uses: docker***/build-push-action@v2
+      with:
+        push: true
+        tags: mooglepom/goof
+
+#We have the technology!!!

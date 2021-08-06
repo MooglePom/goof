@@ -1,0 +1,7 @@
+#DC Ignore
+
+node_modules
+.github
+.idea
+Test
+deploy-heroku.md 
