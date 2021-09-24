@@ -1,4 +1,3 @@
-Jenkinsfile (Declarative Pipeline)
 node {
 
     def mavenHome = tool 'maven-3.6.0' // Refers to a global tool configuration for Maven called 'maven-3.6.0'
@@ -14,7 +13,7 @@ node {
     }
 
     stage('Git Clone') {
-        git url: 'https://github.com/mooglepom/goof
+        git url: 'https://github.com/mooglepom/goof'
         sh 'ls -la'
     }
 
